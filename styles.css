@@ -1,0 +1,553 @@
+/* ===========================================================
+   MARY CAKE — Design Tokens
+   Off-white premium + dourado champagne + coral da marca
+   =========================================================== */
+:root {
+  --color-bg: #F5F1EA;
+  --color-bg-deep: #EDE6D8;
+  --color-ink: #1C1814;
+  --color-ink-soft: #4A433C;
+  --color-gold: #C9A14A;
+  --color-gold-light: #E4C77E;
+  --color-coral: #F08C76;
+  --color-card: #FBF8F2;
+  --color-line: rgba(28, 24, 20, 0.12);
+
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --container: 1280px;
+  --gutter: clamp(1.5rem, 5vw, 6rem);
+
+  --ease-luxe: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; margin: 0; padding: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+/* ===========================================================
+   SPOTLIGHT DOURADO — acompanha o mouse, revela o relevo do fundo
+   Fica abaixo do canvas (que é transparente) para "iluminar" o papel
+   =========================================================== */
+.spotlight {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    640px circle at var(--mx, 50%) var(--my, 40%),
+    rgba(201, 161, 74, 0.16),
+    rgba(201, 161, 74, 0.05) 35%,
+    transparent 68%
+  );
+  transition: opacity 0.4s ease;
+}
+
+/* ===========================================================
+   CANVAS WEBGL — fixo, atrás de todo o conteúdo
+   =========================================================== */
+#webgl-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  display: block;
+  touch-action: pan-y;
+}
+
+/* Ruído sutil — textura tátil de papel de algodão */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ===========================================================
+   LOADER
+   =========================================================== */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  transition: opacity 0.9s var(--ease-luxe), visibility 0.9s var(--ease-luxe);
+}
+#loader.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.loader-mark {
+  width: 84px;
+  height: 84px;
+  opacity: 0;
+  animation: loaderFade 1.4s var(--ease-luxe) forwards 0.2s;
+}
+.loader-mark img { width: 100%; height: 100%; object-fit: contain; }
+@keyframes loaderFade {
+  to { opacity: 1; }
+}
+.loader-bar {
+  width: 180px;
+  height: 1px;
+  background: var(--color-line);
+  position: relative;
+  overflow: hidden;
+}
+.loader-bar span {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  background: var(--color-gold);
+  transition: width 0.3s ease-out;
+}
+
+/* ===========================================================
+   CABEÇALHO
+   =========================================================== */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.6rem var(--gutter);
+  pointer-events: none; /* só os filhos interativos recebem clique */
+}
+.site-header > * { pointer-events: auto; }
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+.brand-word {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--color-ink);
+}
+
+.site-nav {
+  display: flex;
+  gap: 2.4rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.site-nav a {
+  position: relative;
+  opacity: 0.75;
+  transition: opacity 0.3s var(--ease-luxe);
+}
+.site-nav a::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -4px;
+  height: 1px;
+  background: var(--color-gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--ease-luxe);
+}
+.site-nav a:hover { opacity: 1; }
+.site-nav a:hover::after { transform: scaleX(1); }
+
+.btn-header {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid var(--color-ink);
+  border-radius: 999px;
+  transition: background 0.3s var(--ease-luxe), color 0.3s var(--ease-luxe);
+}
+.btn-header:hover {
+  background: var(--color-ink);
+  color: var(--color-bg);
+}
+
+@media (max-width: 860px) {
+  .site-nav { display: none; }
+}
+
+/* ===========================================================
+   MAIN / SECTIONS — cada uma ocupa min 100vh, sem sobreposição
+   =========================================================== */
+main {
+  position: relative;
+  z-index: 10;
+}
+
+.section {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--gutter);
+  align-items: center;
+  padding: 0 var(--gutter);
+  pointer-events: none; /* canvas continua recebendo o scroll/touch */
+}
+.section > * { pointer-events: auto; }
+
+/* Trava o texto numa metade fixa da tela — o 3D nunca cruza esse limite,
+   pois a coreografia de scroll mantém os celulares na metade oposta. */
+.hero-copy,
+.copy-left   { grid-column: 1 / 2; }
+.copy-right  { grid-column: 2 / 3; }
+.copy-center { grid-column: 1 / 3; }
+.section-download { grid-template-columns: 1fr; }
+
+/* Scrim suave atrás de cada bloco de texto: garante legibilidade
+   mesmo que algum reflexo do 3D passe perto do limite da metade */
+.copy-block, .hero-copy {
+  position: relative;
+  z-index: 11;
+}
+.copy-block::before, .hero-copy::before {
+  content: '';
+  position: absolute;
+  inset: -2rem -2.5rem;
+  background: radial-gradient(ellipse at center, rgba(245, 241, 234, 0.6), transparent 72%);
+  filter: blur(6px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-coral);
+  margin: 0 0 1.1rem;
+}
+
+.display-xl {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(3.2rem, 8vw, 6.4rem);
+  line-height: 0.98;
+  letter-spacing: -0.01em;
+  margin: 0 0 1.4rem;
+  color: var(--color-ink);
+}
+.display-xl em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--color-gold);
+}
+
+.display-lg {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(2.4rem, 4.6vw, 3.8rem);
+  line-height: 1.08;
+  letter-spacing: -0.005em;
+  margin: 0 0 1.3rem;
+}
+.display-lg em {
+  font-style: italic;
+  color: var(--color-coral);
+}
+
+.lede, .body-text {
+  font-size: 1.08rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--color-ink-soft);
+  max-width: 30rem;
+}
+
+/* ---- Hero ---- */
+.section-hero { justify-content: flex-start; }
+.hero-copy {
+  max-width: 640px;
+  padding-top: 6rem;
+}
+.btn-primary {
+  display: inline-block;
+  margin-top: 2.2rem;
+  padding: 1rem 2.1rem;
+  background: var(--color-ink);
+  color: var(--color-bg);
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: transform 0.4s var(--ease-luxe), background 0.4s var(--ease-luxe);
+}
+.btn-primary:hover {
+  background: var(--color-gold);
+  transform: translateY(-2px);
+}
+.btn-large { padding: 1.15rem 2.6rem; font-size: 1rem; }
+
+.scroll-cue {
+  position: absolute;
+  bottom: 2.6rem;
+  left: var(--gutter);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  opacity: 0.6;
+}
+.scroll-cue span {
+  width: 1px;
+  height: 38px;
+  background: var(--color-ink);
+  position: relative;
+  overflow: hidden;
+}
+.scroll-cue span::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: 0; right: 0;
+  height: 100%;
+  background: var(--color-gold);
+  animation: scrollCue 1.8s ease-in-out infinite;
+}
+@keyframes scrollCue {
+  0% { top: -100%; }
+  60% { top: 100%; }
+  100% { top: 100%; }
+}
+.scroll-cue small {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+}
+
+/* ---- Copy blocks: alinhamento por seção, deixando espaço pros celulares 3D ---- */
+.copy-block { max-width: 34rem; }
+.copy-left   { margin-right: auto; }
+.copy-right  { margin-left: auto; text-align: right; }
+.copy-right .lede, .copy-right .body-text { margin-left: auto; }
+.copy-center { margin: 0 auto; text-align: center; }
+.copy-center .lede, .copy-center .body-text { margin-left: auto; margin-right: auto; }
+
+.section-atelie .copy-block { max-width: 28rem; }
+.section-jornada .copy-block { max-width: 30rem; }
+
+.mini-steps {
+  margin-top: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  align-items: flex-end;
+}
+.mini-steps li {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.95rem;
+  color: var(--color-ink-soft);
+}
+.mini-steps li span {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--color-gold);
+  font-weight: 600;
+}
+
+/* ---- Mini-resumos narrativos ao lado dos 3 celulares (seção Experiência) ---- */
+.phone-tag {
+  position: absolute;
+  z-index: 11;
+  max-width: 13rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  opacity: 0;
+  transform: translateY(14px);
+  pointer-events: none;
+}
+.phone-tag strong {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.phone-tag span {
+  font-size: 0.86rem;
+  color: var(--color-ink-soft);
+  line-height: 1.4;
+}
+.tag-vitrine  { top: 18%; left: 50%; transform: translate(-50%, 14px); text-align: center; }
+.tag-carrinho { bottom: 16%; left: 12%; text-align: left; }
+.tag-conta    { bottom: 16%; right: 12%; text-align: right; }
+
+@media (max-width: 860px) {
+  .phone-tag { display: none; }
+}
+
+/* ---- Pillars (seção sabor) ---- */
+.pillars {
+  margin-top: 2.2rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.6rem;
+}
+.pillar {
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--color-line);
+}
+.pillar h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+.pillar p {
+  font-size: 0.92rem;
+  color: var(--color-ink-soft);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ---- Seção download / rodapé ---- */
+.section-download {
+  grid-template-columns: 1fr;
+  display: grid;
+  justify-items: center;
+  padding-top: 6rem;
+  padding-bottom: 4rem;
+  gap: 0;
+}
+.section-download .copy-block { display: flex; flex-direction: column; align-items: center; }
+
+.qr-card {
+  margin-top: 2.6rem;
+  display: flex;
+  align-items: center;
+  gap: 1.3rem;
+  padding: 1.3rem 1.7rem;
+  border-radius: 22px;
+  background: rgba(251, 248, 242, 0.55);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(201, 161, 74, 0.35);
+  box-shadow: 0 20px 60px -20px rgba(28, 24, 20, 0.25);
+}
+.qr-image {
+  width: 96px;
+  height: 96px;
+  border-radius: 10px;
+}
+.qr-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  text-align: left;
+}
+.qr-text strong {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.qr-text span {
+  font-size: 0.82rem;
+  color: var(--color-ink-soft);
+}
+
+#apk-download { display: none; margin-top: 2.4rem; }
+
+.site-footer {
+  margin-top: 5rem;
+  padding-top: 2.2rem;
+  border-top: 1px solid var(--color-line);
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+}
+.footer-mark { width: 26px; height: 26px; opacity: 0.7; }
+.site-footer p {
+  font-size: 0.8rem;
+  color: var(--color-ink-soft);
+  margin: 0;
+}
+
+/* ===========================================================
+   RESPONSIVO — mobile reorganiza o canvas via JS,
+   aqui ajustamos o texto/layout
+   =========================================================== */
+@media (max-width: 860px) {
+  .section { padding: 0 1.5rem; grid-template-columns: 1fr; }
+  .hero-copy,
+  .copy-left,
+  .copy-right,
+  .copy-center { grid-column: 1 / 2; }
+  .hero-copy { padding-top: 5rem; }
+  .display-xl { font-size: clamp(2.6rem, 11vw, 3.6rem); }
+  .display-lg { font-size: clamp(2rem, 8vw, 2.6rem); }
+
+  .copy-block,
+  .section-atelie .copy-block,
+  .section-jornada .copy-block { max-width: 100%; }
+
+  .copy-right { text-align: left; margin-left: 0; }
+  .copy-right .lede, .copy-right .body-text { margin-left: 0; }
+  .mini-steps { align-items: flex-start; }
+
+  .pillars { grid-template-columns: 1fr; gap: 1.4rem; }
+
+  .qr-card { display: none; }
+  #apk-download { display: inline-block; }
+
+  .scroll-cue { display: none; }
+}
+
+@media (max-width: 480px) {
+  .display-xl { font-size: 2.5rem; }
+}

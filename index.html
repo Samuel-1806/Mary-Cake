@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Mary Cake — Confeitaria Autoral</title>
+<meta name="description" content="Mary Cake. Doces autorais, feitos à mão, pedidos em um app tão cuidadoso quanto cada bolo." />
+
+<!-- Google Fonts: Cormorant Garamond (display) + Plus Jakarta Sans (corpo/UI) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ============================================================
+     CANVAS WEBGL — cenário fixo em tela cheia, fica atrás de tudo.
+     Toda a cena Three.js (celulares, partículas, luz) é desenhada aqui.
+     ============================================================ -->
+<!-- Spotlight dourado que segue o mouse, revelando o relevo do fundo -->
+<div class="spotlight" id="spotlight" aria-hidden="true"></div>
+
+<canvas id="webgl-canvas" aria-hidden="true"></canvas>
+
+<!-- Overlay de ruído sutil para textura de "papel de algodão" -->
+<div class="noise-overlay" aria-hidden="true"></div>
+
+<!-- Loader inicial: evita "pulo" enquanto texturas/modelo carregam -->
+<div id="loader">
+  <div class="loader-mark">
+    <img src="logo-mary-cake.png" alt="" />
+  </div>
+  <div class="loader-bar"><span id="loader-progress"></span></div>
+</div>
+
+<!-- ============================================================
+     CABEÇALHO
+     ============================================================ -->
+<header class="site-header">
+  <a href="#hero" class="brand">
+    <img src="logo-mary-cake.png" alt="Mary Cake" class="brand-mark" />
+    <span class="brand-word">Mary Cake</span>
+  </a>
+
+  <nav class="site-nav" aria-label="Navegação principal">
+    <a href="#atelie">O Ateliê</a>
+    <a href="#experiencia">O App</a>
+    <a href="#jornada">Como Pedir</a>
+    <a href="#sabor">Compromisso</a>
+  </nav>
+
+  <a href="#download" class="btn-header">Baixar o App</a>
+</header>
+
+<!-- ============================================================
+     MAIN — todo o conteúdo textual flutua sobre o canvas 3D
+     ============================================================ -->
+<main>
+
+  <!-- ============== SEÇÃO 1 — HERO ============== -->
+  <section id="hero" class="section section-hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Confeitaria autoral &middot; sob encomenda</p>
+      <h1 class="display-xl">
+        Doce é o<br><em>ofício</em><br>de Mary.
+      </h1>
+      <p class="lede">
+        Cada bolo nasce de uma receita pensada para uma só pessoa.
+        Agora, pedir esse cuidado cabe na palma da sua mão.
+      </p>
+      <a href="#experiencia" class="btn-primary">Conhecer o app</a>
+    </div>
+    <div class="scroll-cue" aria-hidden="true">
+      <span></span>
+      <small>role para descobrir</small>
+    </div>
+  </section>
+
+  <!-- ============== SEÇÃO 2 — O ATELIÊ ============== -->
+  <section id="atelie" class="section section-atelie">
+    <div class="copy-block copy-left">
+      <p class="eyebrow">01 — O Ateliê</p>
+      <h2 class="display-lg">Receitas que <em>levam tempo</em> de verdade.</h2>
+      <p class="body-text">
+        Por trás de cada fatia existe uma rotina de teste, ajuste e paciência.
+        Mary Cake nasceu de uma cozinha pequena e de um caderno cheio de
+        anotações — hoje, essa mesma dedicação está em cada pedido feito
+        pelo aplicativo, do primeiro toque até a retirada na porta.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============== SEÇÃO 3 — EXPERIÊNCIA DIGITAL ============== -->
+  <section id="experiencia" class="section section-experiencia">
+    <div class="copy-block copy-center">
+      <p class="eyebrow">02 — Experiência Digital</p>
+      <h2 class="display-lg">Um ecossistema <em>tão cuidado</em><br>quanto a receita.</h2>
+      <p class="body-text">
+        Vitrine, carrinho e conta — três telas, uma só experiência fluida,
+        desenhada para que escolher o seu doce seja tão prazeroso quanto comê-lo.
+      </p>
+    </div>
+
+    <!-- Mini-resumos narrativos das 3 telas, surgem com fade-in junto dos celulares -->
+    <div class="phone-tag tag-carrinho" aria-hidden="true">
+      <strong>Carrinho</strong>
+      <span>Pedidos organizados com transparência.</span>
+    </div>
+    <div class="phone-tag tag-vitrine" aria-hidden="true">
+      <strong>Vitrine</strong>
+      <span>Um catálogo vivo, desenhado para encantar.</span>
+    </div>
+    <div class="phone-tag tag-conta" aria-hidden="true">
+      <strong>Minha Conta</strong>
+      <span>Seu histórico a um toque de distância.</span>
+    </div>
+  </section>
+
+  <!-- ============== SEÇÃO 4 — JORNADA DO PEDIDO ============== -->
+  <section id="jornada" class="section section-jornada">
+    <div class="copy-block copy-right">
+      <p class="eyebrow">03 — A Jornada do Pedido</p>
+      <h2 class="display-lg">Três toques entre você<br>e o seu <em>bolo</em>.</h2>
+      <p class="body-text">
+        Escolha o sabor, ajuste a quantidade, finalize. Sem fricção,
+        sem formulários intermináveis — só o essencial, no ritmo de quem
+        já sabe exatamente o que quer.
+      </p>
+      <ul class="mini-steps">
+        <li><span>01</span>Escolha o sabor na vitrine</li>
+        <li><span>02</span>Revise no carrinho</li>
+        <li><span>03</span>Acompanhe na sua conta</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============== SEÇÃO 5 — COMPROMISSO COM O SABOR ============== -->
+  <section id="sabor" class="section section-sabor">
+    <div class="copy-block copy-left">
+      <p class="eyebrow">04 — Compromisso com o Sabor</p>
+      <h2 class="display-lg">Artesanal não é <em>estilo</em>.<br>É processo.</h2>
+      <div class="pillars">
+        <div class="pillar">
+          <h3>Ingredientes selecionados</h3>
+          <p>Frutas no ponto certo, chocolate de origem, nada de atalhos.</p>
+        </div>
+        <div class="pillar">
+          <h3>Produção sob encomenda</h3>
+          <p>Cada doce é feito para o seu pedido — nunca de estoque.</p>
+        </div>
+        <div class="pillar">
+          <h3>Receita assinada</h3>
+          <p>Combinações desenvolvidas e testadas por Mary, sem terceirização.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== SEÇÃO 6 — DOWNLOAD / RODAPÉ ============== -->
+  <section id="download" class="section section-download">
+    <div class="copy-block copy-center">
+      <p class="eyebrow">Leve o ateliê com você</p>
+      <h2 class="display-lg">Baixe o <em>Mary Cake</em></h2>
+      <p class="body-text">Peça do seu jeito, no seu horário, com a mesma atenção de sempre.</p>
+
+      <!-- Desktop: cartão com QR Code (glassmorphism) -->
+      <div class="qr-card" id="qr-card">
+        <img src="qr-code.png" alt="QR Code para baixar o app Mary Cake" class="qr-image" />
+        <div class="qr-text">
+          <strong>Aponte a câmera</strong>
+          <span>ou acesse mary-cake.netlify.app</span>
+        </div>
+      </div>
+
+      <!-- Mobile: CTA direto de download do APK -->
+      <a href="#" id="apk-download" class="btn-primary btn-large">Baixar para Android</a>
+    </div>
+
+    <footer class="site-footer">
+      <img src="logo-mary-cake.png" alt="Mary Cake" class="footer-mark" />
+      <p>&copy; <span id="year"></span> Mary Cake. Feito à mão, com amor por sobremesa.</p>
+    </footer>
+  </section>
+
+</main>
+
+<!-- ============================================================
+     BIBLIOTECAS — Three.js (r128) + GSAP + ScrollTrigger via CDN
+     ============================================================ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<script src="script.js"></script>
+</body>
+</html>
