@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mary Cake — Confeitaria Autoral</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+
+<!-- GSAP + ScrollTrigger: coreografia de scroll da vitrine de celulares -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+</head>
+<body>
+
+<canvas id="fabric-bg" aria-hidden="true"></canvas>
+
+<header>
+  <nav class="nav">
+    <a href="#hero" class="logo">
+      <img src="assets/logo-mary-cake.png" alt="Mary Cake" class="logo-mark">
+      <span>Mary Cake</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#atelie">O Ateliê</a></li>
+      <li><a href="#vitrine">A Vitrine</a></li>
+      <li><a href="#como-pedir">Como Pedir</a></li>
+      <li><a href="#compromisso">Compromisso</a></li>
+      <li><a href="#fundadora">A Fundadora</a></li>
+    </ul>
+    <a href="https://mary-cake.netlify.app/" target="_blank" rel="noopener" class="btn btn-cta">
+      <span class="cta-label-desktop">Pedir Agora</span>
+      <span class="cta-label-mobile">Baixar App</span>
+    </a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">Confeitaria Autoral · Sob Encomenda</p>
+          <h1>Doce é o<br><em>ofício</em><br>de Mary.</h1>
+          <p class="lede">Cada bolo nasce de uma receita pensada para uma só pessoa. Agora, pedir esse cuidado cabe na palma da sua mão.</p>
+          <a href="#vitrine" class="btn">
+            Conhecer a Vitrine
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2l12 10L6 22"/></svg>
+          </a>
+        </div>
+
+        <!-- STAGE 3D #1 — Hero mark / product -->
+        <div class="stage-3d" data-stage="hero-product">
+          <img src="assets/logo-mary-cake.png" alt="Mary Cake" class="stage-fallback-logo">
+        </div>
+      </div>
+
+      <!-- FEATURES ROW -->
+      <div class="features">
+        <span class="scroll-hint">
+          Role para funcionar
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16M6 14l6 6 6-6"/></svg>
+        </span>
+
+        <div class="feature">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 11h16a8 8 0 0 1-16 0z"/><path d="M9 11c0-3 1.5-5 3-6"/></svg>
+          </span>
+          <div>
+            <h4>Receitas Autorais</h4>
+            <p>Criadas com técnica, teste e afeto em cada detalhe.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 18h16"/><path d="M6 18a6 6 0 0 1 12 0"/><path d="M12 6v3"/><circle cx="12" cy="4" r="1"/></svg>
+          </span>
+          <div>
+            <h4>Feito Sob Encomenda</h4>
+            <p>Nada de prateleira. Tudo feito para o seu momento.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2c3 4 3 8 0 11-3-3-3-7 0-11z"/><path d="M12 13v9"/></svg>
+          </span>
+          <div>
+            <h4>Ingredientes Selecionados</h4>
+            <p>Matéria-prima de qualidade para sabores inesquecíveis.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 8l9-4 9 4-9 4-9-4z"/><path d="M3 8v8l9 4 9-4V8"/><path d="M12 12v8"/></svg>
+          </span>
+          <div>
+            <h4>Embalagens que Encantam</h4>
+            <p>Do cuidado ao transportar à experiência ao abrir.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= O ATELIÊ ================= -->
+  <section class="split" id="atelie">
+    <div class="container">
+      <div class="split-grid">
+        <div>
+          <p class="eyebrow">O Ateliê</p>
+          <h2>Receitas que <em>levam tempo</em> de verdade.</h2>
+          <p class="lede">Por trás de cada fatia existe uma rotina de teste, ajuste e paciência. Mary Cake nasceu de uma cozinha pequena e de um caderno cheio de anotações — hoje, essa mesma dedicação está em cada pedido feito pelo aplicativo, do primeiro toque até a retirada na porta.</p>
+          <a href="#atelie" class="btn">
+            Conhecer o Ateliê
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2l12 10L6 22"/></svg>
+          </a>
+        </div>
+
+        <!-- STAGE 3D #2 — Ateliê -->
+        <div class="stage-3d" data-stage="atelie-scene">
+          <div class="dots-decor d1"></div>
+          <div class="dots-decor d2"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= EXPERIÊNCIA DIGITAL ================= -->
+  <section class="ecosystem-intro" id="vitrine">
+    <div class="container">
+      <p class="eyebrow">Experiência Digital</p>
+      <h2>Um ecossistema <em>tão cuidado</em> quanto a receita.</h2>
+      <p class="lede lede-center">Vitrine, carrinho e conta — três telas, uma só experiência fluida, desenhada para que escolher o seu doce seja tão prazeroso quanto comê-lo.</p>
+    </div>
+  </section>
+
+  <!-- ================= DENTRO DO APP — VITRINE DE CELULARES =================
+       Coreografia portada do protótipo anterior: 3 "celulares" em DOM/CSS,
+       cada um dono fixo de uma tela (vitrine/carrinho/conta). O papel de
+       cada um (ativo ao centro, ou recuado à esquerda/direita) é
+       revezado via GSAP + ScrollTrigger conforme o scroll avança pela
+       seção pinada — ver script.js. -->
+  <section class="telas-section" id="como-pedir">
+    <div class="telas-pin">
+      <div class="telas-card">
+        <p class="eyebrow">Dentro do App</p>
+        <h2>Uma tela para <em>cada</em> momento.</h2>
+
+        <div class="telas-panels">
+          <div class="telas-panel is-active" data-screen="vitrine">
+            <span class="telas-panel-index">01</span>
+            <div>
+              <h3>Vitrine</h3>
+              <p>Um catálogo vivo, fotografado com o mesmo cuidado de cada receita — pensado para encantar antes do primeiro toque.</p>
+            </div>
+          </div>
+          <div class="telas-panel" data-screen="carrinho">
+            <span class="telas-panel-index">02</span>
+            <div>
+              <h3>Carrinho</h3>
+              <p>Pedidos organizados com transparência total: item, quantidade e valor sempre visíveis, sem letras miúdas.</p>
+            </div>
+          </div>
+          <div class="telas-panel" data-screen="conta">
+            <span class="telas-panel-index">03</span>
+            <div>
+              <h3>Minha Conta</h3>
+              <p>Seu histórico completo e um toque de distinção — do primeiro bolo ao pedido mais recente.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="telas-dots" role="tablist" aria-label="Telas do aplicativo">
+          <button type="button" class="is-active" data-dot="vitrine" aria-label="Ver tela: Vitrine"></button>
+          <button type="button" data-dot="carrinho" aria-label="Ver tela: Carrinho"></button>
+          <button type="button" data-dot="conta" aria-label="Ver tela: Minha Conta"></button>
+        </div>
+      </div>
+
+      <!-- Palco dos 3 celulares — cada um permanece dono de uma tela;
+           x/y/z/rotationY/scale/opacity são animados via GSAP (script.js). -->
+      <div class="telas-stage" aria-hidden="true">
+        <div class="telas-phone" data-screen="vitrine">
+          <div class="telas-phone-shell">
+            <div class="telas-phone-notch"></div>
+            <div class="telas-phone-screen">
+              <img src="assets/print_app.png" alt="Tela da Vitrine no app Mary Cake" class="mock-screenshot">
+            </div>
+            <div class="telas-phone-glow"></div>
+          </div>
+        </div>
+        <div class="telas-phone" data-screen="carrinho">
+          <div class="telas-phone-shell">
+            <div class="telas-phone-notch"></div>
+            <div class="telas-phone-screen">
+              <img src="assets/print-carrinho.png" alt="Tela do Carrinho no app Mary Cake" class="mock-screenshot">
+            </div>
+            <div class="telas-phone-glow"></div>
+          </div>
+        </div>
+        <div class="telas-phone" data-screen="conta">
+          <div class="telas-phone-shell">
+            <div class="telas-phone-notch"></div>
+            <div class="telas-phone-screen">
+              <img src="assets/print-conta.png" alt="Tela Minha Conta no app Mary Cake" class="mock-screenshot">
+            </div>
+            <div class="telas-phone-glow"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TRÊS TOQUES ================= -->
+  <section class="steps-section" id="compromisso">
+    <div class="container">
+      <div class="steps-grid">
+        <!-- STAGE 3D #7 — Etapas do pedido -->
+        <div class="stage-3d" data-stage="order-steps"></div>
+
+        <div>
+          <p class="eyebrow">A Cada Etapa do Pedido</p>
+          <h2>Três toques entre você e o seu <em>bolo</em>.</h2>
+          <ul class="steps-list">
+            <li><span class="circle">01</span> Escolha o sabor na vitrine</li>
+            <li><span class="circle">02</span> Revise no carrinho</li>
+            <li><span class="circle">03</span> Finalize com segurança</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= A FUNDADORA ================= -->
+  <section class="founder" id="fundadora">
+    <div class="container">
+      <p class="eyebrow">A Arte do Doce</p>
+      <div class="founder-grid">
+        <div>
+          <h2>Conheça <em>Mary</em>.</h2>
+          <p>Por trás de cada criação da Mary Cake, e resumida história de dedicação que atravessa mais de oito anos de aprimoramento no universo da confeitaria artesanal. Natural do Paraná e com o coração em Laranjal Paulista, Mary transformou sua paixão em uma curadoria de sabores, onde a tradição do doce caseiro encontra o refinamento da alta confeitaria.</p>
+          <p>Cada receita que sai da nossa cozinha é o resultado da busca constante pelo equilíbrio perfeito entre a memória afetiva e a excelência técnica.</p>
+        </div>
+
+        <!-- Retrato real da fundadora -->
+        <div class="bio-portrait-wrap">
+          <img src="assets/foto-mary.jpg" alt="Retrato de Mary, fundadora da Mary Cake" class="bio-portrait">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BAIXE O APP / QR CODE ================= -->
+  <section class="qr-section" id="baixe-o-app">
+    <div class="container">
+      <div class="qr-grid">
+        <div>
+          <p class="eyebrow">Leve a Mary Cake com Você</p>
+          <h2>Baixe o app e peça o seu <em>doce</em> agora.</h2>
+          <p class="lede">Aponte a câmera do seu celular para o QR Code e tenha a vitrine, o carrinho e a sua conta sempre à mão — do primeiro toque até a retirada na porta.</p>
+          <a href="https://mary-cake.netlify.app/" target="_blank" rel="noopener" class="btn">
+            <span class="cta-label-desktop">Pedir Agora</span>
+            <span class="cta-label-mobile">Baixar App</span>
+          </a>
+        </div>
+
+        <div class="qr-card">
+          <img src="assets/qr-code.png" alt="QR Code para baixar o app Mary Cake" class="qr-image">
+          <span class="qr-caption">Escaneie e baixe o app</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-row">
+    <img src="assets/logo-mary-cake.png" alt="Mary Cake" class="footer-mark">
+    <span>&copy; 2026 Mary Cake. Feito à mão, com amor por sobremesa.</span>
+  </div>
+</footer>
+
+<script type="module" src="script.js"></script>
+
+</body>
+</html>
