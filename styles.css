@@ -79,12 +79,30 @@ ul { list-style: none; margin: 0; padding: 0; }
   z-index: 0;
   pointer-events: none;
   background:
-    /* Tecido/cetim fotográfico (assets/bg-silk.jpg) — visível sobretudo à
-       direita, como nos mockups. Some suavemente sobre o off-white à
-       esquerda via gradiente, garantindo contraste de leitura do texto. */
-    linear-gradient(90deg, var(--color-bg) 0%, var(--color-bg) 38%, rgba(245,242,237,0.55) 60%, rgba(245,242,237,0) 100%),
-    radial-gradient(ellipse 120% 80% at 50% -10%, rgba(255,255,255,0.35), transparent 60%),
+    /* Tecido/cetim fotográfico real (assets/bg-silk.jpg) — camada de
+       cima, PRIORITÁRIA. Assim que você salvar sua própria foto de
+       cetim com esse nome dentro de assets/, ela substitui a camada
+       abaixo automaticamente, sem precisar mexer em mais nada aqui. */
+    linear-gradient(90deg, var(--color-bg) 0%, var(--color-bg) 36%, rgba(245,242,237,0.5) 58%, rgba(245,242,237,0) 100%),
     url('assets/bg-silk.jpg') center right / cover no-repeat,
+    /* Foto de cetim/seda livre de direitos (Unsplash), usada como
+       substituta temporária enquanto assets/bg-silk.jpg não existir —
+       garante que o fundo nunca fique "vazio"/liso como no seu print. */
+    linear-gradient(90deg, var(--color-bg) 0%, var(--color-bg) 36%, rgba(245,242,237,0.4) 58%, rgba(245,242,237,0) 100%),
+    url('https://images.unsplash.com/photo-1645785328791-64e8ff28edcd?auto=format&fit=crop&w=1800&q=80') center right / cover no-repeat,
+    /* Aproximação em CSS puro de dobras de cetim — última camada de
+       segurança, sempre visível por baixo de tudo. */
+    repeating-linear-gradient(
+      118deg,
+      rgba(255,255,255,0.55) 0px,
+      rgba(255,255,255,0.55) 2px,
+      rgba(220, 205, 184, 0.12) 2px,
+      rgba(220, 205, 184, 0.12) 40px,
+      rgba(255,255,255,0.35) 60px,
+      rgba(196, 172, 140, 0.16) 96px
+    ),
+    radial-gradient(ellipse 90% 70% at 82% 55%, rgba(255,255,255,0.6), transparent 65%),
+    radial-gradient(ellipse 120% 80% at 50% -10%, rgba(255,255,255,0.5), transparent 60%),
     linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-deep) 100%);
 }
 /* Fibra de papel fina, em diagonal — dá um tato "algodão prensado" */
@@ -1171,16 +1189,16 @@ main {
   grid-column: 1 / 2;
   position: relative;
   z-index: 11;
-  width: min(100%, 21rem);
-  justify-self: start;
+  width: 100%;
+  justify-self: stretch;
   border: 1px dashed var(--color-gold);
   border-radius: 22px;
-  padding: 0.6rem;
+  padding: 0.8rem;
   background: var(--color-card);
 }
 .bio-portrait {
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1 / 1.06;
   object-fit: cover;
   border-radius: 16px;
   box-shadow: none;
@@ -1228,8 +1246,8 @@ main {
   margin-top: 2.8rem;
   display: flex;
   align-items: center;
-  gap: 1.3rem;
-  padding: 1.5rem 2rem;
+  gap: 1.8rem;
+  padding: 2rem 2.4rem;
   border-radius: 20px;
   background: var(--color-card);
   border: 1px solid var(--color-line);
@@ -1237,11 +1255,11 @@ main {
   position: relative;
 }
 .qr-image {
-  width: 96px;
-  height: 96px;
-  border-radius: 10px;
+  width: 168px;
+  height: 168px;
+  border-radius: 12px;
   border: 1px dashed var(--color-coral);
-  padding: 4px;
+  padding: 6px;
   object-fit: contain;
 }
 .qr-text {
