@@ -1,0 +1,1357 @@
+/* ===========================================================
+   MARY CAKE — Design Tokens
+   Off-white premium + dourado champagne + coral da marca
+   =========================================================== */
+:root {
+  --color-bg: #F5F2ED;
+  --color-bg-deep: #ECE5D9;
+  --color-ink: #3D352F;
+  --color-ink-soft: #6B5F55;
+  --color-gold: #B89A7A;
+  --color-gold-light: #D4A392;
+  --color-coral: #D4A392;
+  --color-rose: #B89A7A;
+  --color-rose-light: #D4A392;
+  --color-card: #FAF7F2;
+  --color-line: rgba(61, 53, 47, 0.12);
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --container: 1280px;
+  --gutter: clamp(1.5rem, 5vw, 6rem);
+
+  --ease-luxe: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Equivalente CSS ao GSAP power3.inOut — aceleração e desaceleração
+     orgânicas ("manteiga"), usado em hovers e microinterações de UI. */
+  --ease-soft: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Trava o scroll enquanto os assets (texturas + logo vetorial) ainda
+   estão carregando — o site só libera a rolagem com 100% do LoadingManager
+   pronto (ver script.js, onAssetLoaded/releaseScrollLock). */
+html.is-loading-lock,
+html.is-loading-lock body {
+  overflow: hidden;
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; margin: 0; padding: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+/* ===========================================================
+   MOLDURA EDITORIAL — friso fino fixo, à la revista de alta costura
+   =========================================================== */
+.frame-line {
+  display: none;
+}
+
+/* ===========================================================
+   FUNDO — papel premium com textura de grão visível
+   =========================================================== */
+.paper-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    /* Tecido/cetim fotográfico real (assets/bg-silk.jpg) — camada de
+       cima, PRIORITÁRIA. Assim que você salvar sua própria foto de
+       cetim com esse nome dentro de assets/, ela substitui a camada
+       abaixo automaticamente, sem precisar mexer em mais nada aqui. */
+    linear-gradient(90deg, var(--color-bg) 0%, var(--color-bg) 36%, rgba(245,242,237,0.5) 58%, rgba(245,242,237,0) 100%),
+    url('assets/bg-silk.jpg') center right / cover no-repeat,
+    /* Foto de cetim/seda livre de direitos (Unsplash), usada como
+       substituta temporária enquanto assets/bg-silk.jpg não existir —
+       garante que o fundo nunca fique "vazio"/liso como no seu print. */
+    linear-gradient(90deg, var(--color-bg) 0%, var(--color-bg) 36%, rgba(245,242,237,0.4) 58%, rgba(245,242,237,0) 100%),
+    url('https://images.unsplash.com/photo-1645785328791-64e8ff28edcd?auto=format&fit=crop&w=1800&q=80') center right / cover no-repeat,
+    /* Aproximação em CSS puro de dobras de cetim — última camada de
+       segurança, sempre visível por baixo de tudo. */
+    repeating-linear-gradient(
+      118deg,
+      rgba(255,255,255,0.55) 0px,
+      rgba(255,255,255,0.55) 2px,
+      rgba(220, 205, 184, 0.12) 2px,
+      rgba(220, 205, 184, 0.12) 40px,
+      rgba(255,255,255,0.35) 60px,
+      rgba(196, 172, 140, 0.16) 96px
+    ),
+    radial-gradient(ellipse 90% 70% at 82% 55%, rgba(255,255,255,0.6), transparent 65%),
+    radial-gradient(ellipse 120% 80% at 50% -10%, rgba(255,255,255,0.5), transparent 60%),
+    linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-deep) 100%);
+}
+/* Fibra de papel fina, em diagonal — dá um tato "algodão prensado" */
+.paper-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  background-image: repeating-linear-gradient(
+      115deg,
+      rgba(28,24,20,0.014) 0px,
+      rgba(28,24,20,0.014) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    repeating-linear-gradient(
+      25deg,
+      rgba(28,24,20,0.012) 0px,
+      rgba(28,24,20,0.012) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+}
+
+/* ===========================================================
+   RELEVO DOURADO — agora vive inteiramente dentro do canvas
+   WebGL (malha 3D com deformação pontual no cursor). Esta
+   camada CSS de "bolhas/mancha escura" foi removida por
+   completo — nada de blur escuro seguindo o mouse.
+   =========================================================== */
+
+/* Ruído sutil — micro-grão visível de papel premium */
+.noise-overlay {
+  display: none;
+}
+
+/* ===========================================================
+   CANVAS WEBGL — fixo, atrás de todo o conteúdo
+   =========================================================== */
+#webgl-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 3;
+  display: block;
+  touch-action: pan-y;
+}
+
+/* ===========================================================
+   LOGO SÓLIDO DE ABERTURA — imagem real e cheia (sem gaps),
+   centralizada sobre o canvas. É o que garante a FASE 1 do
+   briefing ("logo carrega centralizado de forma sólida"),
+   já que uma nuvem de pontos nunca fica 100% sólida. Some
+   suavemente assim que o scroll começa (ver script.js).
+   =========================================================== */
+#hero-logo-solid {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  width: clamp(160px, 21vw, 300px);
+  pointer-events: none;
+  opacity: 0;
+  /* CORREÇÃO: este elemento NÃO usa mais @keyframes/animation em CSS.
+     Uma animação com fill-mode:forwards continua "dona" da propriedade
+     opacity no cascade mesmo depois de terminar — e isso tinha PRIORIDADE
+     sobre o style.opacity que o GSAP aplicava depois via JS. Resultado:
+     o tween de saída do GSAP nunca surtia efeito visual, e o logo ficava
+     preso na tela (fixed, z-index 4) até o fim do site. Agora a entrada
+     E a saída são 100% controladas pelo GSAP (script.js), sem cascade
+     concorrendo pela mesma propriedade. */
+}
+#hero-logo-solid img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+@media (max-width: 860px) {
+  #hero-logo-solid { width: clamp(130px, 30vw, 220px); }
+}
+
+/* ===========================================================
+   LOADER
+   =========================================================== */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  transition: opacity 0.9s var(--ease-luxe), visibility 0.9s var(--ease-luxe);
+}
+#loader.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.loader-mark {
+  width: 84px;
+  height: 84px;
+  opacity: 0;
+  animation: loaderFade 1.4s var(--ease-luxe) forwards 0.2s;
+}
+.loader-mark img { width: 100%; height: 100%; object-fit: contain; }
+@keyframes loaderFade {
+  to { opacity: 1; }
+}
+.loader-bar {
+  width: 180px;
+  height: 1px;
+  background: var(--color-line);
+  position: relative;
+  overflow: hidden;
+}
+.loader-bar span {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  background: var(--color-gold);
+  transition: width 0.3s ease-out;
+}
+
+/* ===========================================================
+   CABEÇALHO
+   =========================================================== */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.6rem var(--gutter);
+  pointer-events: none; /* só os filhos interativos recebem clique */
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  -webkit-backdrop-filter: blur(0px) saturate(100%);
+  backdrop-filter: blur(0px) saturate(100%);
+  transition: transform 0.55s var(--ease-luxe), opacity 0.4s var(--ease-luxe),
+    background-color 0.5s var(--ease-luxe), backdrop-filter 0.5s var(--ease-luxe),
+    -webkit-backdrop-filter 0.5s var(--ease-luxe), border-color 0.5s var(--ease-luxe);
+  will-change: transform, backdrop-filter;
+}
+.site-header > * { pointer-events: auto; }
+
+/* GLASSMORPHISM NO SCROLL: classe aplicada via JS (script.js, "Header
+   Inteligente") assim que o usuário sai do topo — o menu passa de
+   totalmente transparente para um vidro fosco sutil sobre o papel,
+   sem nunca usar preto/branco puros (usa --ink/--paper com alpha). */
+.site-header.is-scrolled {
+  background: rgba(245, 242, 237, 0.62); /* --paper com transparência */
+  border-bottom: 1px solid rgba(184, 154, 122, 0.18); /* --gold com transparência */
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  box-shadow: 0 8px 32px rgba(61, 53, 47, 0.06);
+}
+
+/* HIDE ON SCROLL: aplicada via JS (script.js, seção "Header Inteligente")
+   sempre que o usuário rola para baixo; some imediatamente ao rolar pra
+   cima, sem brigar com o scrub do GSAP ScrollTrigger (lógica independente,
+   baseada só na direção/velocidade real do scroll). */
+.site-header.header-hidden {
+  transform: translateY(-130%);
+  opacity: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+.brand-word {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--color-ink);
+}
+
+.site-nav {
+  display: flex;
+  gap: 2.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.site-nav a {
+  position: relative;
+  opacity: 0.72;
+  transition: opacity 0.3s var(--ease-luxe);
+}
+.site-nav a::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -4px;
+  height: 1px;
+  background: var(--color-gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--ease-luxe);
+}
+.site-nav a:hover { opacity: 1; }
+.site-nav a:hover::after { transform: scaleX(1); }
+
+.btn-header {
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid var(--color-coral);
+  border-radius: 999px;
+  color: var(--color-coral);
+  transition: background 0.3s var(--ease-luxe), color 0.3s var(--ease-luxe);
+}
+.btn-header:hover {
+  background: var(--color-coral);
+  color: var(--color-bg);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.btn-ghost {
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 0.7rem 1.2rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--color-ink-soft);
+  position: relative;
+  transition: color 0.3s var(--ease-luxe), border-color 0.3s var(--ease-luxe);
+}
+.btn-ghost::after {
+  content: '';
+  position: absolute;
+  left: 1.2rem; right: 1.2rem; bottom: 0.45rem;
+  height: 1px;
+  background: var(--color-coral);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--ease-luxe);
+}
+.btn-ghost:hover {
+  color: var(--color-ink);
+}
+.btn-ghost:hover::after { transform: scaleX(1); }
+
+@media (max-width: 860px) {
+  .site-nav { display: none; }
+  .btn-ghost { display: none; }
+}
+
+/* ===========================================================
+   MAIN / SECTIONS — cada uma ocupa min 100vh, sem sobreposição
+   =========================================================== */
+main {
+  position: relative;
+  z-index: 10;
+}
+
+.section {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--gutter);
+  align-items: center;
+  padding: 0 var(--gutter);
+  pointer-events: none; /* canvas continua recebendo o scroll/touch */
+  border-top: 1px solid var(--color-line);
+}
+.section > * { pointer-events: auto; }
+.section-hero { border-top: none; }
+
+/* Numeração editorial fina, ancorada no canto de cada seção --
+   reforça a grade de "alta costura" pedida no briefing.        */
+.section-index {
+  position: absolute;
+  top: 2.6rem;
+  right: var(--gutter);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  color: var(--color-ink-soft);
+  opacity: 0.45;
+  pointer-events: none;
+}
+.section-index::after {
+  content: '';
+  display: inline-block;
+  width: 38px;
+  height: 1px;
+  background: var(--color-gold);
+  margin-left: 0.7rem;
+  vertical-align: middle;
+  opacity: 0.7;
+}
+
+/* Trava o texto numa metade fixa da tela — o 3D nunca cruza esse limite,
+   pois a coreografia de scroll mantém os celulares na metade oposta. */
+.hero-copy,
+.copy-left   { grid-column: 1 / 2; }
+.copy-right  { grid-column: 2 / 3; }
+.copy-center { grid-column: 1 / 3; }
+.section-download { grid-template-columns: 1fr; }
+
+/* SEM CARD POR PADRÃO: o texto fica diretamente sobre o fundo em
+   movimento, como pedido no briefing — nada de painel/retângulo atrás
+   dele. Em vez de um bloco opaco, usamos um halo de texto (text-shadow)
+   suave para garantir leitura mesmo com a malha 3D atrás. Cards de vidro
+   só voltam a existir pontualmente, nas seções em que os celulares 3D
+   realmente cruzam por trás do texto (ver `.section-experiencia` e
+   `.section-jornada`, mais abaixo). */
+.copy-block, .hero-copy {
+  position: relative;
+  z-index: 11;
+  padding: 0;
+}
+.copy-block .eyebrow, .hero-copy .eyebrow,
+.copy-block .display-lg, .hero-copy .display-xl,
+.copy-block .body-text, .hero-copy .lede,
+.copy-block .mini-steps, .copy-block .process-grid, .copy-block .steps-grid, .copy-block .ecosystem-list {
+  text-shadow: 0 2px 18px rgba(245, 241, 234, 0.85), 0 1px 4px rgba(245, 241, 234, 0.9);
+}
+
+/* ---- GLASSMORPHISM "PALCO" — container obrigatório para todo bloco de
+   texto que convive na tela com os celulares/telas 3D (Experiência
+   Digital, Telas do App e Jornada do Pedido). Fundo off-white
+   translúcido + blur 20px + borda fina em degradê dourado: separa
+   fisicamente a leitura do objeto 3D, sem nunca esconder os assets
+   atrás dela.
+   CONTRASTE REFORÇADO: opacidade do fundo subiu de 0.74 para 0.9 e o
+   blur de 20px para 24px — o card agora se lê como um "cartão" sólido
+   de verdade sobre qualquer fundo (grid animado ou celular escuro),
+   não mais como um vidro fino que deixava tons escuros vazarem por
+   trás do texto. ---- */
+.section-experiencia .copy-block,
+.section-telas .telas-card {
+  padding: 2.2rem 2.6rem;
+  border-radius: 24px;
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  box-shadow: 0 30px 80px -35px rgba(28, 24, 20, 0.18);
+}
+
+/* "Como Pedir" agora é plano (sem vidro), já que não convive mais com
+   celulares 3D atrás do texto — apenas alarga o bloco para caber os
+   3 cards de ícone lado a lado. */
+.section-jornada .copy-block {
+  max-width: 54rem;
+  position: relative;
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-coral);
+  margin: 0 0 1.3rem;
+  position: relative;
+  padding-left: 1.6rem;
+}
+.eyebrow::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1.1rem;
+  height: 1px;
+  background: var(--color-coral);
+  transform: translateY(-50%);
+}
+
+.display-xl {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(3.2rem, 8vw, 6.4rem);
+  line-height: 0.96;
+  letter-spacing: -0.015em;
+  margin: 0 0 1.4rem;
+  color: var(--color-ink);
+}
+.display-xl em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--color-gold);
+}
+
+.display-lg {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(2.4rem, 4.6vw, 3.8rem);
+  line-height: 1.06;
+  letter-spacing: -0.008em;
+  margin: 0 0 1.4rem;
+}
+.display-lg em {
+  font-style: italic;
+  color: var(--color-coral);
+}
+
+.lede, .body-text {
+  font-size: 1.05rem;
+  font-weight: 400;
+  line-height: 1.7;
+  letter-spacing: 0.005em;
+  color: var(--color-ink-soft);
+  max-width: 30rem;
+}
+
+/* ---- Hero ---- */
+.section-hero { justify-content: flex-start; }
+.hero-copy {
+  max-width: 640px;
+  padding-top: 6rem;
+  padding-bottom: 7rem; /* reserva espaço pro scroll-cue nunca cruzar com a lede */
+}
+.btn-primary {
+  display: inline-block;
+  margin-top: 2.3rem;
+  padding: 1rem 2.2rem;
+  background: var(--color-ink);
+  color: var(--color-bg);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: transform 0.4s var(--ease-luxe), background 0.4s var(--ease-luxe);
+}
+.btn-primary:hover {
+  background: var(--color-gold);
+  transform: translateY(-2px);
+}
+.btn-large { padding: 1.15rem 2.6rem; font-size: 0.86rem; }
+
+.scroll-cue {
+  position: absolute;
+  bottom: 2.6rem;
+  right: var(--gutter);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 11;
+}
+.scroll-cue span {
+  width: 1px;
+  height: 38px;
+  background: var(--color-ink);
+  position: relative;
+  overflow: hidden;
+}
+.scroll-cue span::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: 0; right: 0;
+  height: 100%;
+  background: var(--color-gold);
+  animation: scrollCue 1.8s ease-in-out infinite;
+}
+@keyframes scrollCue {
+  0% { top: -100%; }
+  60% { top: 100%; }
+  100% { top: 100%; }
+}
+.scroll-cue small {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+}
+
+/* ---- Copy blocks: alinhamento por seção, deixando espaço pros celulares 3D ---- */
+.copy-block { max-width: 34rem; }
+.copy-left   { margin-right: auto; }
+.copy-right  { margin-left: auto; text-align: right; }
+.copy-right .lede, .copy-right .body-text { margin-left: auto; }
+.copy-center { margin: 0 auto; text-align: center; }
+.copy-center .lede, .copy-center .body-text { margin-left: auto; margin-right: auto; }
+.copy-right .eyebrow { padding-left: 0; padding-right: 1.6rem; }
+.copy-right .eyebrow::before { left: auto; right: 0; }
+.copy-center .eyebrow { padding-left: 0; display: inline-flex; align-items: center; justify-content: center; }
+.copy-center .eyebrow::before { display: none; }
+
+.section-atelie .copy-block { max-width: 28rem; }
+
+/* A vitrine central de celulares vive no meio vertical da viewport durante
+   toda esta seção — o texto agora fica ancorado no terço superior, para
+   que os três aparelhos permaneçam sempre visíveis abaixo dele, em vez de
+   um bloco de texto pousado exatamente em cima do celular do meio. */
+.section-experiencia {
+  align-items: flex-start;
+  padding-top: clamp(6rem, 12vh, 9rem);
+}
+.section-experiencia .copy-block { max-width: 26rem; padding: 2rem 2.4rem; }
+@media (max-width: 860px) {
+  .section-experiencia { align-items: center; padding-top: 0; }
+}
+
+/* ---- Cartão "ecossistema" — ícones de dispositivo + lista 01/02/03,
+   espelhando o mockup de referência da seção "O App". ---- */
+.ecosystem-card {
+  grid-column: 2 / 3;
+  justify-self: end;
+  align-self: center;
+  width: min(100%, 24rem);
+  padding: 2.4rem 2.4rem 2.2rem;
+  border-radius: 24px;
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  box-shadow: 0 30px 80px -30px rgba(28, 24, 20, 0.22);
+  position: relative;
+  z-index: 11;
+}
+.ecosystem-devices {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0 0.4rem;
+}
+.device-icon {
+  fill: none;
+  stroke: var(--color-gold);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.device-monitor { width: 4.4rem; height: 4.4rem; }
+.device-tablet { width: 2.6rem; height: 2.6rem; }
+.device-phone { width: 1.7rem; height: 1.7rem; }
+.ecosystem-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 1.2rem 0 1.6rem;
+  color: var(--color-coral);
+  font-size: 0.9rem;
+}
+.ecosystem-divider::before,
+.ecosystem-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-line);
+}
+.ecosystem-list { display: flex; flex-direction: column; }
+.ecosystem-list li {
+  display: flex;
+  gap: 1.1rem;
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--color-line);
+}
+.ecosystem-list li:first-child { border-top: none; padding-top: 0; }
+.ecosystem-list li:last-child { padding-bottom: 0; }
+.ecosystem-index {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.5rem;
+  color: var(--color-gold);
+  line-height: 1;
+  flex-shrink: 0;
+}
+.ecosystem-list h3 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 0.3rem;
+}
+.ecosystem-list p {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--color-ink-soft);
+  margin: 0;
+}
+@media (max-width: 860px) {
+  .ecosystem-card { grid-column: 1 / 2; justify-self: center; margin-top: 2rem; width: 100%; }
+}
+
+/* O card de vidro completo (fundo + borda em degradê + glow) agora é
+   aplicado de forma consistente às seções "Experiência Digital",
+   "Telas do App" e "Jornada do Pedido" — ver a regra consolidada
+   `.section-experiencia .copy-block, .section-telas .telas-card,
+   .section-jornada .copy-block` lá em cima. */
+
+.mini-steps {
+  margin-top: 2.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+  align-items: flex-end;
+  /* Visualmente invisível (o novo .steps-grid assume a apresentação),
+     mas SEM display:none — mantém getBoundingClientRect() válido para
+     os ScrollTriggers de script.js que dependem da posição real de
+     cada <li> para sincronizar o foco dos celulares 3D. */
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+.mini-steps li {
+  display: flex;
+  align-items: baseline;
+  gap: 1.2rem;
+  font-size: 0.96rem;
+  letter-spacing: 0.01em;
+  color: var(--color-ink-soft);
+  opacity: 0.55;
+  transition: opacity 0.5s var(--ease-luxe), transform 0.5s var(--ease-luxe);
+}
+/* Numeral editorial: grande, fino, itálico — elemento de design que guia
+   o olho, não um badge/ícone. Cresce discretamente e ganha peso quando o
+   passo correspondente está "em foco" (ver .is-active, controlado via JS
+   em sincronia com o celular que ganha destaque). */
+.mini-steps li span {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 2.1rem;
+  line-height: 1;
+  color: var(--color-gold);
+  border: none;
+  width: auto;
+  height: auto;
+  display: inline-block;
+  transition: font-weight 0.4s var(--ease-luxe), color 0.4s var(--ease-luxe), transform 0.5s var(--ease-luxe);
+}
+.mini-steps li.is-active {
+  opacity: 1;
+  transform: translateX(-4px);
+  color: var(--color-ink);
+}
+.mini-steps li.is-active span {
+  font-weight: 600;
+  color: var(--color-coral);
+  transform: scale(1.08);
+}
+
+/* ---- "Como Pedir" — 3 cards com ícone, conectados por linha fina,
+   espelhando o mockup de referência. ---- */
+.steps-grid {
+  margin-top: 3rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  position: relative;
+}
+.steps-grid::before {
+  content: '';
+  position: absolute;
+  top: 3.9rem;
+  left: 16.6%;
+  right: 16.6%;
+  height: 1px;
+  background: var(--color-gold);
+  opacity: 0.4;
+  z-index: 0;
+}
+.step-card {
+  position: relative;
+  z-index: 1;
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  border-radius: 20px;
+  padding: 2rem 1.6rem 1.8rem;
+  margin: 0 0.7rem;
+  text-align: center;
+  box-shadow: 0 25px 60px -30px rgba(28, 24, 20, 0.18);
+}
+.step-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 999px;
+  background: rgba(212, 163, 146, 0.16);
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--color-coral);
+  font-size: 0.95rem;
+  margin-bottom: 1.1rem;
+}
+.step-icon {
+  display: block;
+  width: 2.4rem;
+  height: 2.4rem;
+  margin: 0 auto 1.1rem;
+  fill: none;
+  stroke: var(--color-gold);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.step-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0 0 0.6rem;
+}
+.step-card p {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--color-ink-soft);
+  margin: 0;
+}
+@media (max-width: 860px) {
+  .steps-grid { grid-template-columns: 1fr; gap: 1.4rem; }
+  .steps-grid::before { display: none; }
+  .step-card { margin: 0; }
+}
+
+/* ===========================================================
+   SEÇÃO "TELAS DO APP" — apresentação dedicada, com revezamento
+   ---------------------------------------------------------------
+   Substitui as antigas mini-tags flutuantes (fonte de confusão visual
+   e de "imagens bugadas", já que dependiam de textura 3D carregando em
+   sincronia com a coreografia de scroll). Aqui, cada captura de tela é
+   um <img> real e comum — sempre renderizado pelo navegador, nunca
+   sujeito a atraso de textura, luz de cena ou ângulo de câmera. As 3
+   telas se revezam via crossfade puro em CSS, uma de cada vez, cada
+   qual com seu próprio card explicativo (ver script.js, "6d. TELAS DO
+   APP" — o revezamento é dirigido por scroll).
+   =========================================================== */
+/* PADRÃO "PIN": em vez de dois elementos sticky independentes disputando
+   o mesmo grid (frágil entre navegadores), a seção inteira é só um
+   contêiner alto (240vh) com UM único wrapper sticky (.telas-pin) preso
+   no topo — dentro dele vive o grid de 2 colunas padrão do site
+   (mockup à esquerda, card à direita), sempre centralizado na tela
+   enquanto a seção rola por baixo. É o mesmo padrão consagrado de
+   "seção pinada com conteúdo scrubado", só que aqui o revezamento das
+   telas é dirigido pelo progresso do scroll (ver script.js, "6d.").  */
+.section-telas {
+  display: block;
+  min-height: 240vh;
+  padding: 0;
+  pointer-events: none;
+}
+.telas-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  column-gap: var(--gutter);
+  padding: 0 var(--gutter);
+}
+.telas-pin > * { pointer-events: auto; }
+
+/* O "palco" dos 3 celulares fica sempre na coluna direita, ecoando o
+   mockup de referência (card de texto à esquerda / vitrine de
+   aparelhos à direita, com o ativo em primeiro plano e os outros dois
+   recuados atrás dele). */
+.telas-stage {
+  grid-column: 2 / 3;
+  position: relative;
+  height: clamp(24rem, 46vw, 34rem);
+  perspective: 1400px;
+}
+
+/* Camada EXTERNA — 100% controlada via GSAP (updateTelasState, em
+   script.js): x, y, z, rotationY, rotation, scale, opacity e zIndex.
+   Nunca leva animação CSS própria, para não disputar a propriedade
+   `transform` com os tweens do GSAP. `transform-style: preserve-3d`
+   garante que o rotationY renderize como profundidade real (diagonal),
+   não como um achatamento 2D. */
+.telas-phone {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(200px, 17vw, 264px);
+  aspect-ratio: 9 / 18.5;
+  transform-style: preserve-3d;
+}
+
+/* Camada INTERNA — carrega a aparência física do aparelho e a
+   "respiração" idle contínua (flutuação sutil), totalmente desacoplada
+   do posicionamento acima. É isso que garante que o pano/celulares
+   nunca fiquem estáticos, mesmo parados num estado. */
+.telas-phone-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 2.6rem;
+  background: linear-gradient(155deg, #232019, #121110);
+  padding: 0.5rem;
+  box-shadow:
+    0 60px 100px -40px rgba(28, 24, 20, 0.5),
+    0 2px 0 rgba(255, 255, 255, 0.05) inset,
+    0 0 0 1px rgba(201, 161, 74, 0.15);
+  animation: telasPhoneFloat 7s var(--ease-luxe) infinite;
+  backface-visibility: hidden;
+}
+.telas-phone-notch {
+  position: absolute;
+  top: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 34%;
+  height: 1.2rem;
+  background: #121110;
+  border-radius: 0 0 1rem 1rem;
+  z-index: 3;
+}
+.telas-phone-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 2.1rem;
+  overflow: hidden;
+  background: #171411;
+}
+.telas-shot {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Brilho dourado sutil atrás do aparelho — profundidade, sem competir
+   com o conteúdo. Mais forte no celular em foco (.is-front). */
+.telas-phone-glow {
+  position: absolute;
+  inset: -18% -30%;
+  z-index: -1;
+  background: radial-gradient(ellipse at center, rgba(228, 199, 126, 0.28), transparent 68%);
+  filter: blur(30px);
+  pointer-events: none;
+  opacity: 0.55;
+  transition: opacity 0.8s var(--ease-luxe);
+}
+.telas-phone.is-front .telas-phone-glow { opacity: 1; }
+@keyframes telasPhoneFloat {
+  0%, 100% { transform: translateY(0) rotate(-1.1deg); }
+  50% { transform: translateY(-14px) rotate(1.1deg); }
+}
+
+/* ---- Card explicativo — agora à esquerda, sticky também, com o
+   CONTEÚDO interno (telas-panels) revezado por classe .is-active
+   conforme a tela ativa muda. ---- */
+.telas-card {
+  grid-column: 1 / 2;
+  max-width: 27rem;
+}
+.telas-panels {
+  position: relative;
+  margin-top: 1.8rem;
+  min-height: 8.6rem;
+}
+.telas-panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  gap: 1.1rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s var(--ease-luxe), transform 0.6s var(--ease-luxe);
+  pointer-events: none;
+}
+.telas-panel.is-active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.telas-panel-index {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 2.4rem;
+  line-height: 1;
+  color: var(--color-gold);
+}
+.telas-panel h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+.telas-panel p {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--color-ink-soft);
+  margin: 0;
+  max-width: 22rem;
+}
+
+.telas-dots {
+  display: flex;
+  gap: 0.7rem;
+  margin-top: 2rem;
+}
+.telas-dots button {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-gold);
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.35s var(--ease-luxe), transform 0.35s var(--ease-luxe), width 0.35s var(--ease-luxe);
+}
+.telas-dots button.is-active {
+  background: var(--color-gold);
+  width: 1.6rem;
+  border-radius: 999px;
+}
+
+@media (max-width: 860px) {
+  .section-telas {
+    min-height: auto;
+  }
+  .telas-pin {
+    position: relative;
+    top: auto;
+    height: auto;
+    grid-template-columns: 1fr;
+    row-gap: 2rem;
+    padding: 4rem 1.5rem 3rem;
+  }
+  .telas-stage {
+    grid-column: 1 / 2;
+    height: clamp(20rem, 78vw, 26rem);
+  }
+  .telas-card {
+    grid-column: 1 / 2;
+    max-width: 100%;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 680px) {
+  /* Em telas pequenas, os 2 celulares recuados viram ruído visual —
+     mantemos só o celular em foco, com crossfade simples de opacidade
+     entre estados (o GSAP continua trocando a classe .is-front). */
+  .telas-phone { width: clamp(190px, 62vw, 240px); }
+  .telas-phone:not(.is-front) { opacity: 0 !important; pointer-events: none; }
+}
+
+/* ---- Pillars (seção sabor) — grade fina de alta costura ---- */
+/* ---- "Nosso Processo" — 5 cards com ícone, conectados por linha fina,
+   espelhando o mockup de referência. Substitui o antigo grid de 3
+   "pillars" (nenhum seletor de .pillar/.pillars é usado em script.js,
+   então esta troca é 100% segura para a lógica). ---- */
+.section-sabor .copy-block { max-width: 66rem; }
+.process-grid {
+  margin-top: 3rem;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  position: relative;
+}
+.process-grid::before {
+  content: '';
+  position: absolute;
+  top: 3.5rem;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: var(--color-gold);
+  opacity: 0.4;
+  z-index: 0;
+}
+.process-card {
+  position: relative;
+  z-index: 1;
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  border-radius: 18px;
+  padding: 1.7rem 1.2rem 1.5rem;
+  margin: 0 0.5rem;
+  text-align: center;
+  box-shadow: 0 25px 60px -30px rgba(28, 24, 20, 0.18);
+}
+.process-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 999px;
+  background: rgba(184, 154, 122, 0.14);
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--color-gold);
+  font-size: 0.85rem;
+  margin-bottom: 0.9rem;
+}
+.process-icon {
+  display: block;
+  width: 2.1rem;
+  height: 2.1rem;
+  margin: 0 auto 0.9rem;
+  fill: none;
+  stroke: var(--color-gold);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.process-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+.process-card p {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--color-ink-soft);
+  margin: 0;
+}
+.process-closing {
+  margin-top: 3rem;
+  text-align: center;
+}
+.process-closing-heart {
+  display: block;
+  color: var(--color-coral);
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+}
+.process-closing p {
+  font-size: 0.95rem;
+  color: var(--color-ink-soft);
+  line-height: 1.6;
+  margin: 0;
+}
+.process-closing em {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--color-coral);
+}
+@media (max-width: 860px) {
+  .process-grid { grid-template-columns: 1fr; gap: 1.2rem; }
+  .process-grid::before { display: none; }
+  .process-card { margin: 0; }
+}
+
+/* ---- Seção "Quem Somos" — retrato + biografia em duas colunas ----
+   Ponto de chegada visual do morph celulares -> bolo (script.js): o bolo
+   3D permanece discretamente no fundo enquanto esta seção é lida,
+   reforçando a ligação entre o app e a confeiteira por trás dele. */
+.section-quemsomos {
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  column-gap: clamp(2rem, 6vw, 5rem);
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+.bio-portrait-wrap {
+  grid-column: 1 / 2;
+  position: relative;
+  z-index: 11;
+  width: 100%;
+  justify-self: stretch;
+  border: 1px dashed var(--color-gold);
+  border-radius: 22px;
+  padding: 0.8rem;
+  background: var(--color-card);
+  box-sizing: border-box;
+  display: flex;
+}
+.bio-portrait {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1.06;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: none;
+}
+/* Card translúcido/opaco atrás do texto "Quem Somos" — o bolo 3D final
+   da coreografia (script.js, seção 6) fica ao fundo desta seção, então
+   o texto precisa do mesmo "palco" de vidro usado nas seções com
+   celulares, garantindo contraste e legibilidade também aqui. */
+.bio-copy {
+  grid-column: 2 / 3;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 11;
+  padding: clamp(2rem, 3.2vw, 3.2rem) clamp(2rem, 3.6vw, 3.4rem);
+  border-radius: 22px;
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  box-shadow: 0 30px 80px -35px rgba(28, 24, 20, 0.18);
+  box-sizing: border-box;
+}
+
+@media (max-width: 860px) {
+  .section-quemsomos {
+    grid-template-columns: 1fr;
+    row-gap: 2rem;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+  .bio-portrait-wrap { grid-column: 1 / 2; width: min(100%, 18rem); justify-self: center; }
+  .bio-copy { grid-column: 1 / 2; max-width: 100%; padding: 1.8rem 1.6rem; border-radius: 18px; }
+  .bio-portrait { aspect-ratio: 4 / 3.4; }
+}
+
+/* ---- Seção download / rodapé ---- */
+.section-download {
+  grid-template-columns: 1fr;
+  display: grid;
+  justify-items: center;
+  padding-top: 6rem;
+  padding-bottom: 4rem;
+  gap: 0;
+}
+.section-download .copy-block { display: flex; flex-direction: column; align-items: center; }
+
+.qr-card {
+  margin-top: 2.8rem;
+  display: flex;
+  align-items: center;
+  gap: 1.8rem;
+  padding: 2rem 2.4rem;
+  border-radius: 20px;
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  box-shadow: 0 25px 70px -35px rgba(28, 24, 20, 0.18);
+  position: relative;
+}
+.qr-image {
+  width: 168px;
+  height: 168px;
+  border-radius: 12px;
+  border: 1px dashed var(--color-coral);
+  padding: 6px;
+  object-fit: contain;
+}
+.qr-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  text-align: left;
+}
+.qr-text strong {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.qr-link {
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+  color: var(--color-rose);
+  text-decoration: underline;
+  text-decoration-color: rgba(201, 123, 134, 0.45);
+  text-underline-offset: 3px;
+  transition: opacity 0.3s var(--ease-luxe), text-decoration-color 0.3s var(--ease-luxe), color 0.3s var(--ease-luxe);
+}
+.qr-link:hover {
+  opacity: 0.85;
+  color: var(--color-rose-light);
+  text-decoration-color: var(--color-rose);
+}
+
+#apk-download { display: none; margin-top: 2.4rem; }
+
+.site-footer {
+  margin-top: 5rem;
+  padding-top: 2.2rem;
+  border-top: 1px solid var(--color-line);
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+}
+.footer-mark { width: 26px; height: 26px; opacity: 0.7; }
+.site-footer p {
+  font-size: 0.78rem;
+  letter-spacing: 0.01em;
+  color: var(--color-ink-soft);
+  margin: 0;
+}
+
+/* ===========================================================
+   RESPONSIVO — mobile reorganiza o canvas via JS,
+   aqui ajustamos o texto/layout
+   =========================================================== */
+@media (max-width: 860px) {
+  .section { padding: 0 1.5rem; grid-template-columns: 1fr; }
+  .section-index { display: none; }
+  .hero-copy,
+  .copy-left,
+  .copy-right,
+  .copy-center { grid-column: 1 / 2; }
+  .hero-copy { padding-top: 5rem; }
+  .display-xl { font-size: clamp(2.6rem, 11vw, 3.6rem); }
+  .display-lg { font-size: clamp(2rem, 8vw, 2.6rem); }
+
+  .copy-block,
+  .hero-copy,
+  .section-atelie .copy-block,
+  .section-jornada .copy-block { max-width: 100%; padding: 1.6rem 1.4rem; border-radius: 16px; }
+
+  .copy-right { text-align: left; margin-left: 0; }
+  .copy-right .lede, .copy-right .body-text { margin-left: 0; }
+  .copy-right .eyebrow { padding-left: 1.6rem; padding-right: 0; }
+  .copy-right .eyebrow::before { left: 0; right: auto; }
+  .mini-steps { align-items: flex-start; }
+
+  .section-sabor .copy-block { max-width: 100%; }
+
+  .qr-card { display: none; }
+  #apk-download { display: inline-block; }
+
+  .scroll-cue { display: none; }
+}
+
+@media (max-width: 480px) {
+  .display-xl { font-size: 2.5rem; }
+}
